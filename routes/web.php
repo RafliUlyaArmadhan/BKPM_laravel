@@ -83,9 +83,17 @@ Route::prefix('admin')->group(function () {
         return "Halaman dashboard admin.";
     });
 });
-
+//ACARA 5
 //Resource Controller
 Route::resource('user', ManagementUserController::class);
+
+// ACARA 6
+Route::get('/home', function () {
+    return view('home');
+});
+
+Route::get('/user', [ManagementUserController::class, 'index']);
+
 
 
    
