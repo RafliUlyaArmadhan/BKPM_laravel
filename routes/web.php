@@ -103,3 +103,6 @@ route::group(['namespace' => 'App\Http\Controllers\frontend'], function()
 
 
    
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
