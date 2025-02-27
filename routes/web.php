@@ -94,6 +94,12 @@ Route::get('/home', function () {
 
 Route::get('/user', [ManagementUserController::class, 'index']);
 
+//ACARA 7
+route::group(['namespace' => 'App\Http\Controllers\frontend'], function()
+{
+    route::resource('home', 'HomeController');
+});
+
 
 
    
