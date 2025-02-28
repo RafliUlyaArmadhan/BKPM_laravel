@@ -1,5 +1,8 @@
 <?php
 
+namespace App\Http\Controllers;
+
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ManagementUserController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\DataController;
@@ -97,7 +100,7 @@ Route::get('/user', [ManagementUserController::class, 'index']);
 //ACARA 7
 route::group(['namespace' => 'App\Http\Controllers\frontend'], function()
 {
-    route::resource('home', 'HomeController');
+    route::resource('homes', 'HomeController');
 });
 
 
@@ -106,3 +109,8 @@ route::group(['namespace' => 'App\Http\Controllers\frontend'], function()
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+//ACARA 8
+{
+        Route::resource('dashboard', DashboardController::class);
+}
