@@ -8,86 +8,90 @@ use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\DataController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Backend\DashboardController;
+use App\Http\Controllers\Backend\PendidikanController;
+use App\Http\Controllers\Backend\PengalamanKerjaController;
 
-//ACARA 3
-//Route name
+// ACARA 3
+// Route name
 Route::get('/', function () {
     return view('welcome');
 });
 
-//Basic route
-Route::get('/foo', function() {
+// Basic route
+Route::get('/foo', function () {
     return "Hello World";
 });
 
-//Parameter route
+// Parameter route
 Route::get('/foo/{id}', function ($id) {
     return 'User ' . $id;
 });
 
-//Menentukan parameter route yang diperlukan
+// Menentukan parameter route yang diperlukan
 Route::get('posts/{post}/comments/{comment}', function ($postID, $commentID) {
     //
 });
 
-//File Route Default
+// File Route Default
 Route::get('/user', [UserController::class, 'viewUser'])->name('user');
 
-//Route method POST
+// Route method POST
 Route::post('/user/store', [UserController::class, 'store'])->name('user.store');
 
-//Redirect route
+// Redirect route
 Route::redirect('/here', '/there');
 
-//Redirect route with status
+// Redirect route with status
 Route::redirect('/here301', '/there', 301);
 Route::redirect('/here302', '/there', 302);
 
-//Route view
+// Route view
 Route::view('/wwelcome', 'welcome');
 Route::view('/welcome', 'welcome', ['name' => 'Rafli Ulya']);
 
-//Parameter opsional
+// Parameter opsional
 Route::get('user/{name?}', function ($name = 'Armadhan') {
     return $name;
 });
 
-//Regular Expression Constraint
+// Regular Expression Constraint
 Route::get('user/{name}', function ($name) {
 })->where('name', '[A-Za-z]+');
 
 Route::get('user/{id}', function ($id) {
 })->where('id', '[0-9]+');
 
-//Generate URL ke Route Bersama
+// Generate URL ke Route Bersama
 Route::get('/profile', [UserController::class, 'showProfile'])->name('profileku');
 
-//Middleware
+// Middleware
 Route::middleware(['check.user'])->group(function () {
     Route::get('/dashboard', [UserController::class, 'dashboardLog'])->name('Dashboard');
 });
 
-//Namespaces
+// Namespaces
 Route::group(['namespace' => 'App\Http\Controllers\User'], function () {
     Route::get('/user/info', [UserController::class, 'info'])->name('user.info');
     Route::get('/user/data', [DataController::class, 'data'])->name('user.data');
 });
 
-//Subdomain Routing
+// Subdomain Routing
 Route::domain('{account}.example.com')->group(function () {
     Route::get('/', function ($account) {
         return "Ini adalah halaman akun: " . $account;
     });
 });
 
-//Prefix
+// Prefix
 Route::prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
         return "Halaman dashboard admin.";
     });
 });
-//ACARA 5
-//Resource Controller
+
+// ACARA 5
+// Resource Controller
 Route::resource('user', ManagementUserController::class);
 
 // ACARA 6
@@ -97,20 +101,19 @@ Route::get('/home', function () {
 
 Route::get('/user', [ManagementUserController::class, 'index']);
 
-//ACARA 7
-route::group(['namespace' => 'App\Http\Controllers\frontend'], function()
-{
-    route::resource('homes', 'HomeController');
+// ACARA 7
+Route::group(['namespace' => 'App\Http\Controllers\frontend'], function () {
+    Route::resource('homes', 'HomeController');
 });
 
-
-
-   
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-//ACARA 8
-{
-        Route::resource('dashboard', DashboardController::class);
-}
+// ACARA 8
+Route::resource('dashboard', DashboardController::class);
+Route::resource('pendidikan', PendidikanController::class);
+Route::resource('pengalaman_kerja', PengalamanKerjaController::class);
+
+// 
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dash.index');
