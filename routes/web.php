@@ -13,6 +13,7 @@ use App\Http\Controllers\Backend\PendidikanController;
 use App\Http\Controllers\Backend\PengalamanKerjaController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\PegawaiController;
+use App\Http\Controllers\CobaController;
 
 // ACARA 3
 // Route name
@@ -127,3 +128,6 @@ Route::get('/session/delete', [SessionController::class, 'delete']);
 Route::get('/pegawai/{pli}', [PegawaiController::class, 'index']);
 Route::get('/formulir', [PegawaiController::class, 'formulir']);
 Route::post('/formulir/proses', [PegawaiController::class, 'proses']);
+
+Route::get('/cobaeror', [CobaController::class, 'index']);
+Route::get('/cobaeror/{nama?}', [CobaController::class, 'index']);
