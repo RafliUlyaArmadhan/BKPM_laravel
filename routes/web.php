@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\PendidikanController;
 use App\Http\Controllers\Backend\PengalamanKerjaController;
+use App\Http\Controllers\SessionController;
+use App\Http\Controllers\PegawaiController;
 
 // ACARA 3
 // Route name
@@ -117,3 +119,11 @@ Route::resource('pengalaman_kerja', PengalamanKerjaController::class);
 
 // 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dash.index');
+//
+Route::get('/session/create', [SessionController::class, 'create']);
+Route::get('/session/show', [SessionController::class, 'show']);
+Route::get('/session/delete', [SessionController::class, 'delete']);
+
+Route::get('/pegawai/{pli}', [PegawaiController::class, 'index']);
+Route::get('/formulir', [PegawaiController::class, 'formulir']);
+Route::post('/formulir/proses', [PegawaiController::class, 'proses']);
