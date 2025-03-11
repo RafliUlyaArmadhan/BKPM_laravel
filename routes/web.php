@@ -14,6 +14,7 @@ use App\Http\Controllers\Backend\PengalamanKerjaController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\CobaController;
+use App\Http\Controllers\UploadController;
 
 // ACARA 3
 // Route name
@@ -131,3 +132,7 @@ Route::post('/formulir/proses', [PegawaiController::class, 'proses']);
 
 Route::get('/cobaeror', [CobaController::class, 'index']);
 Route::get('/cobaeror/{nama?}', [CobaController::class, 'index']);
+
+Route::get('/upload', [UploadController::class, 'upload'])->name('upload');
+Route::post('/upload/proses', [UploadController::class, 'proses_upload'])->name('upload.proses');
+Route::post('/upload/resize', [UploadController::class, 'resize_upload'])->name('upload.resize');

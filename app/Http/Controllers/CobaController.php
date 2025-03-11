@@ -9,9 +9,9 @@ class CobaController extends Controller
     public function index($nama = null)
     {
         if ($nama) {
-            return $nama; // Langsung menampilkan nama tanpa "Halo,"
+            return $nama; 
         } else {
-            abort(403); // Jika tidak ada parameter, tampilkan error 404
+            abort(403); 
         }
     }
 }
