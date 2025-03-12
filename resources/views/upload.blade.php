@@ -1,66 +1,49 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Upload File Dengan Laravel</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-</head>
-<body>
-<div class="container">
-    <h2 class="text-center my-5">Upload File Dengan Laravel</h2>
-    <div class="col-lg-8 mx-auto my-5">
+<?php
 
-        <!-- Notifikasi Jika Upload Berhasil -->
-        @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        @endif
+namespace App\Http\Controllers;
 
-        <!-- Peringatan Jika Ada Error -->
-        @if(session('error'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                {{ session('error') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        @endif
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
-        <!-- Peringatan Jika Ada Validasi Error -->
-        @if(count($errors) > 0)
-            <div class="alert alert-danger">
-                @foreach ($errors->all() as $error)
-                    {{ $error }} <br/>
-                @endforeach
-            </div>
-        @endif
+class UploadController extends Controller
+{
+    /**
+     * Menyimpan file yang diunggah oleh Dropzone.
+     */
+    public function store(Request $request)
+    {
+        // Validasi file yang diunggah (hanya menerima gambar & PDF dengan ukuran maksimal 2MB)
+        $request->validate([
+            'file' => 'required|mimes:jpg,jpeg,png,gif,pdf|max:2048',
+        ]);
 
-        <form action="{{ route('upload.resize') }}" method="POST" enctype="multipart/form-data">
-            @csrf
+        // Ambil file dari request
+        $file = $request->file('file');
 
-            <div class="form-group">
-                <label for="file"><b>File Gambar</b></label>
-                <input type="file" name="file" id="file" class="form-control" required>
-            </div>
+        // Buat nama unik untuk file (timestamp + nama asli)
+        $fileName = time() . '_' . $file->getClientOriginalName();
 
-            <div class="form-group">
-                <label for="keterangan"><b>Keterangan</b></label>
-                <textarea class="form-control" name="keterangan" id="keterangan" required></textarea>
-            </div>
+        // Dapatkan ekstensi file dalam huruf kecil
+        $extension = strtolower($file->getClientOriginalExtension());
 
-            <button type="submit" class="btn btn-primary">Upload</button>
-        </form>
+        // Tentukan folder tujuan berdasarkan jenis file
+        $destinationPath = ($extension === 'pdf')
+            ? public_path('img/pdf')        // Jika PDF, simpan di public/img/pdf
+            : public_path('img/dropzone');  // Jika gambar, simpan di public/img/dropzone
 
-    </div>
-</div>
+        // Buat folder jika belum ada
+        if (!File::exists($destinationPath)) {
+            File::makeDirectory($destinationPath, 0777, true, true);
+        }
 
-<!-- Tambahkan script untuk Bootstrap agar alert bisa ditutup -->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        // Simpan file ke folder yang ditentukan
+        $file->move($destinationPath, $fileName);
 
-</body>
-</html>
+        // Kembalikan respons JSON ke Dropzone
+        return response()->json([
+            'success' => true,
+            'message' => 'File berhasil diunggah!',
+            'file_url' => asset(($extension === 'pdf' ? 'img/pdf/' : 'img/dropzone/') . $fileName),
+        ]);
+    }
+}

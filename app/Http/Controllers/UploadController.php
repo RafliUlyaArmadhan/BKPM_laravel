@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
-use Intervention\Image\Facades\Image; // Pastikan ini ada
+use Intervention\Image\Facades\Image;
 
 class UploadController extends Controller
 {
@@ -15,70 +15,101 @@ class UploadController extends Controller
 
     public function proses_upload(Request $request)
     {
-        // Validasi input
-        $request->validate([
-            'file' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'keterangan' => 'required|string|max:255',
+        $this->validate($request, [
+            'file' => 'required',
+            'keterangan' => 'required',
         ]);
 
-        // Simpan data file yang diupload ke variabel $file
+        // Menyimpan data file yang diupload ke variabel $file
         $file = $request->file('file');
 
-        // Nama file unik
-        $nama_file = time() . '_' . $file->getClientOriginalName();
+        // Ambil ekstensi file
+        $extension = strtolower($file->getClientOriginalExtension());
 
-        // Tentukan lokasi penyimpanan
-        $tujuan_upload = public_path('data_file');
-
-        // Jika folder belum ada, buat foldernya
-        if (!File::exists($tujuan_upload)) {
-            File::makeDirectory($tujuan_upload, 0777, true);
+        // Tentukan folder tujuan berdasarkan tipe file
+        if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
+            $destinationPath = public_path('img/dropzone');
+        } elseif ($extension === 'pdf') {
+            $destinationPath = public_path('pdf/dropzone'); // ✅ Perbaikan lokasi penyimpanan PDF
+        } else {
+            return back()->with('error', 'Format file tidak didukung.');
         }
 
-        // Upload file ke folder public/data_file/
-        $file->move($tujuan_upload, $nama_file);
+        // Pastikan folder ada, jika belum maka buat
+        if (!File::exists($destinationPath)) {
+            File::makeDirectory($destinationPath, 0777, true, true);
+        }
 
-        return redirect()->route('upload')->with('success', 'File berhasil diupload!');
+        // Buat nama unik untuk file
+        $fileName = time() . '_' . $file->getClientOriginalName();
+
+        // Pindahkan file ke folder yang sesuai
+        $file->move($destinationPath, $fileName);
+
+        return back()->with('success', 'File berhasil diunggah!');
     }
 
-    public function resize_upload(Request $request)
+    public function dropzone()
     {
-        // Validasi input
-        $request->validate([
-            'file' => 'required|image|mimes:jpg,jpeg,png|max:2048',
-            'keterangan' => 'required|string|max:255',
-        ]);
+        return view('dropzone');
+    }
 
-        // Tentukan lokasi penyimpanan
-        $path = public_path('img/logo');
-
-        // Jika folder belum ada, buat foldernya
-        if (!File::exists($path)) {
-            File::makeDirectory($path, 0777, true);
-        }
-
-        // Ambil file dari form
+    public function dropzone_store(Request $request)
+    {
         $file = $request->file('file');
+        $extension = strtolower($file->getClientOriginalExtension());
 
-        // Buat nama file unik
-        $fileName = 'logo_' . uniqid() . '.' . $file->getClientOriginalExtension();
-
-        // Buat canvas ukuran 200x200
-        $canvas = Image::canvas(200, 200);
-
-        // Resize gambar dengan mempertahankan rasio
-        $resizeImage = Image::make($file)->resize(null, 200, function ($constraint) {
-            $constraint->aspectRatio();
-        });
-
-        // Masukkan gambar yang telah diresize ke dalam canvas
-        $canvas->insert($resizeImage, 'center');
-
-        // Simpan gambar ke folder public/img/logo/
-        if ($canvas->save($path . '/' . $fileName)) {
-            return redirect()->route('upload')->with('success', 'Data berhasil ditambahkan!');
+        // Cek apakah file adalah gambar atau PDF
+        if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
+            $destinationPath = public_path('img/dropzone');
+        } elseif ($extension === 'pdf') {
+            $destinationPath = public_path('pdf/dropzone'); // ✅ Perbaikan lokasi penyimpanan PDF
         } else {
-            return redirect()->route('upload')->with('error', 'Data gagal ditambahkan!');
+            return response()->json(['error' => 'Format file tidak didukung'], 400);
         }
+
+        // Pastikan folder tujuan ada
+        if (!File::exists($destinationPath)) {
+            File::makeDirectory($destinationPath, 0777, true, true);
+        }
+
+        // Buat nama unik
+        $fileName = time() . '.' . $extension;
+
+        // Simpan file
+        $file->move($destinationPath, $fileName);
+
+        return response()->json(['success' => $fileName]);
+    }
+
+    public function pdf_upload()
+    {
+        return view('pdf_upload');
+    }
+
+    public function pdf_store(Request $request)
+    {
+        $file = $request->file('file');
+        $extension = strtolower($file->getClientOriginalExtension());
+
+        // Pastikan hanya menerima PDF
+        if ($extension !== 'pdf') {
+            return response()->json(['error' => 'Hanya file PDF yang diperbolehkan'], 400);
+        }
+
+        $destinationPath = public_path('pdf/dropzone'); // ✅ Perbaikan lokasi penyimpanan PDF
+
+        // Pastikan folder tujuan ada
+        if (!File::exists($destinationPath)) {
+            File::makeDirectory($destinationPath, 0777, true, true);
+        }
+
+        // Buat nama unik
+        $fileName = 'pdf_' . time() . '.' . $extension;
+
+        // Simpan file
+        $file->move($destinationPath, $fileName);
+
+        return response()->json(['success' => $fileName]);
     }
 }
