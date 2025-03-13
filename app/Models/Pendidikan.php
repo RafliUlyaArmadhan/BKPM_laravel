@@ -2,13 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Pendidikan extends Model
 {
+    use HasFactory;
+
     protected $table = 'pendidikan';
     protected $primaryKey = 'id';
+    public $timestamps = true; 
+
     protected $fillable = [
-        'nama','tingkatan','tahun_masuk','tahun_keluar',
-    ];//
+        'nama', 'tingkatan', 'tahun_masuk', 'tahun_keluar',
+    ];
 }

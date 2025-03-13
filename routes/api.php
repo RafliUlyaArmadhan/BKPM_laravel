@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Response;
 use App\Http\Controllers\Backend\ApiPendidikanController;
 use App\Models\Pendidikan;
 
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -27,4 +28,5 @@ Route::namespace('App\Http\Controllers')->group(function () {
     Route::put('api_pendidikan/{id}', 'ApiPendidikanController@updatePen');
     Route::delete('api_pendidikan/{id}', 'ApiPendidikanController@deletePen');
 });
+
 
