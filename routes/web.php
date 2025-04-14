@@ -15,6 +15,7 @@ use App\Http\Controllers\SessionController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\CobaController;
 use App\Http\Controllers\UploadController;
+use App\Http\Controllers\HomeController;
 
 // ACARA 3
 // Route name
@@ -112,7 +113,7 @@ Route::group(['namespace' => 'App\Http\Controllers\frontend'], function () {
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 // ACARA 8
 Route::resource('dashboard', DashboardController::class);
@@ -133,13 +134,15 @@ Route::post('/formulir/proses', [PegawaiController::class, 'proses']);
 Route::get('/cobaeror', [CobaController::class, 'index']);
 Route::get('/cobaeror/{nama?}', [CobaController::class, 'index']);
 
+//acara 19
 Route::get('/upload', [UploadController::class, 'upload'])->name('upload');
 Route::post('/upload/proses', [UploadController::class, 'proses_upload'])->name('upload.proses');
+
+// Route::get('/upload/resize', [UploadController::class, 'resize_upload'])->name('upload.resize');
 Route::post('/upload/resize', [UploadController::class, 'resize_upload'])->name('upload.resize');
 
-
+//acara 20
 Route::get('/dropzone', [UploadController::class, 'dropzone'])->name('dropzone');
 Route::post('/dropzone/store', [UploadController::class, 'dropzone_store'])->name('dropzone.store');
 Route::get('/pdf_upload', [UploadController::class, 'pdf_upload'])->name('pdf.upload');
 Route::post('/pdf/store', [UploadController::class, 'pdf_store'])->name('pdf.store');
-Route::post('/dropzone/delete', [UploadController::class, 'deletePdfFile'])->name('dropzone.delete');

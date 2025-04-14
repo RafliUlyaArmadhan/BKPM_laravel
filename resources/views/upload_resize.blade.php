@@ -12,7 +12,7 @@
             <h2 class="text-center my-5">Upload File Dengan Laravel</h2>
             <div class="col-lg-8 mx-auto my-5">
                 {{-- Peringatan Jika Error --}}
-                @if (count($errors) > 0)
+                @if(count($errors) > 0)
                     <div class="alert alert-danger">
                         @foreach ($errors->all() as $error)
                             {{ $error }} <br />
@@ -20,8 +20,8 @@
                     </div>
                 @endif
 
-                <!-- <form action="{{ route('upload.proses') }}" method="POST" enctype="multipart/form-data"> -->
-                <form action="{{ route('upload.resize') }}" method="POST" enctype="multipart/form-data">
+                {{-- <form action="{{ route('upload.upload') }}" method="POST" enctype="multipart/form-data"> --}}
+                <form action="{{ route('upload.proses.resize') }}" method="POST" enctype="multipart/form-data">
                     {{ csrf_field() }}
                     {{-- Pesan Jika Success --}}
                     @if (session('success'))
